@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h> // Para system y malloc
 #include "game.h"
-#include "enemy.c"
+#include "enemy.h"
 
 // Función para verificar colisiones entre balas del jugador y del enemigo
 void checkCollisions(Game *game)
