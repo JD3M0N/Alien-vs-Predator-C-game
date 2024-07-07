@@ -3,7 +3,6 @@
 #include "game.h"
 #include "enemy.h"
 
-// Función para verificar colisiones entre balas del jugador y del enemigo
 void checkCollisions(Game *game)
 {
     for (int i = 0; i < game->bullet_count; i++)
@@ -14,12 +13,22 @@ void checkCollisions(Game *game)
             {
                 if (game->enemy_bullets[j].active)
                 {
+                    // Verificar colisión en la misma posición
                     if (game->bullets[i].x == game->enemy_bullets[j].x &&
                         game->bullets[i].y == game->enemy_bullets[j].y)
                     {
-                        // Colisión detectada
                         game->bullets[i].active = 0;
                         game->enemy_bullets[j].active = 0;
+                        printf("\033[%d;%dH*", game->bullets[i].y + 1, game->bullets[i].x + 1); // Mostrar colisión
+                    }
+                    // Verificar colisión cruzada inminente
+                    else if (game->bullets[i].x == game->enemy_bullets[j].x &&
+                             game->bullets[i].y == game->enemy_bullets[j].y + 1)
+                    {
+                        game->bullets[i].active = 0;
+                        game->enemy_bullets[j].active = 0;
+                        printf("\033[%d;%dH*", game->bullets[i].y, game->bullets[i].x + 1);                 // Mostrar colisión
+                        printf("\033[%d;%dH*", game->enemy_bullets[j].y + 1, game->enemy_bullets[j].x + 1); // Mostrar colisión
                     }
                 }
             }

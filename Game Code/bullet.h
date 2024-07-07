@@ -3,7 +3,7 @@
 
 #include "ship.h" // Para declarar Ship
 
-#define MAX_BULLETS 5
+#define MAX_BULLETS 10
 
 typedef struct
 {
