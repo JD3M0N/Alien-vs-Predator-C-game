@@ -20,7 +20,7 @@ int main()
             updateGame(&game, input);
         }
         renderGame(&game);
-        Sleep(50); // Controla la velocidad del bucle
+        Sleep(50); // Controla la velocidad del bucle5
     }
 
     return 0;
