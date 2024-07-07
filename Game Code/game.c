@@ -42,7 +42,7 @@ void initGame(Game *game)
 void updateGame(Game *game, char input)
 {
     updateShip(&game->ship, input);
-    if (input == ' ')
+    if (input == 'k')
     {
         addBullet(game, game->ship.x, game->ship.y - 1); // Disparo un espacio por encima de la nave
     }
