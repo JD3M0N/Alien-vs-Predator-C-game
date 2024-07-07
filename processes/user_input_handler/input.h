@@ -8,7 +8,7 @@
 #include <stdbool.h>
 #include <pthread.h>
 
-#include <G:\Programming\Universidad\2nd Year\SO\Alien vs Predator\Alien vs Predator\globlal_signals.h>
+#include "globlal_signals.h"
 
 #define Buffer_Size 100
 char buffer[Buffer_Size];
