@@ -6,6 +6,7 @@ void initShip(Ship *ship)
 {
     ship->x = FIELD_WIDTH / 2;  // Posición inicial en el centro
     ship->y = FIELD_HEIGHT - 1; // Posición fija en la parte inferior
+    ship->lives = 3; // Inicializa las vidas en 3
 }
 
 void updateShip(Ship *ship, char input)

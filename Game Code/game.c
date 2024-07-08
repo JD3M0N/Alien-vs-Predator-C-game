@@ -5,6 +5,40 @@
 
 void checkCollisions(Game *game)
 {
+    // Verificar colisiones entre balas del jugador y enemigos
+    for (int i = 0; i < game->bullet_count; i++)
+    {
+        Bullet *bullet = &game->bullets[i];
+        if (bullet->active)
+        {
+            for (int j = 0; j < 2; j++)
+            {
+                NaveEnemiga *enemy = game->enemies[j];
+                if (enemy->active && bullet->x == enemy->x && bullet->y == enemy->y)
+                {
+                    bullet->active = 0;
+                    enemy->active = 0;
+                }
+            }
+        }
+    }
+
+    // Verificar colisiones entre balas enemigas y la nave del jugador
+    for (int i = 0; i < MAX_ENEMY_BULLETS; i++)
+    {
+        EnemyBullet *bullet = &game->enemy_bullets[i];
+        if (bullet->active && bullet->x == game->ship.x && bullet->y == game->ship.y)
+        {
+            bullet->active = 0;
+            game->ship.lives--;
+            if (game->ship.lives <= 0)
+            {
+                game->game_over = 1; // Termina el juego si las vidas llegan a cero
+            }
+        }
+    }
+
+    // Verificar colisiones entre balas
     for (int i = 0; i < game->bullet_count; i++)
     {
         if (game->bullets[i].active)
@@ -55,10 +89,17 @@ void initGame(Game *game)
     {
         initEnemyBullet(&game->enemy_bullets[i]);
     }
+
+    game->game_over = 0; // Inicializa el juego como no terminado
 }
 
 void updateGame(Game *game, char input)
 {
+    if (game->game_over)
+    {
+        return; // No actualizar si el juego ha terminado
+    }
+
     updateShip(&game->ship, input);
     if (input == ' ')
     {
@@ -134,6 +175,15 @@ void renderGame(Game *game)
     for (int i = 0; i < MAX_ENEMY_BULLETS; i++)
     {
         renderEnemyBullet(&game->enemy_bullets[i]);
+    }
+
+    // Mostrar vidas del jugador
+    printf("\033[%d;%dHVidas: %d\n", FIELD_HEIGHT + 2, 0, game->ship.lives);
+
+    // Mostrar mensaje de fin de juego si es necesario
+    if (game->game_over)
+    {
+        printf("\033[%d;%dHGame Over\n", FIELD_HEIGHT / 2, FIELD_WIDTH / 2 - 4);
     }
 }
 
