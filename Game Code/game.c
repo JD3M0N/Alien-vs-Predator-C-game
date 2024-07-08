@@ -42,6 +42,7 @@ void initGame(Game *game)
     game->bullets = NULL;
     game->bullet_count = 0;
     initEnemy(&game->enemy);
+    initMovingEnemy(&game->moving_enemy); // Inicializa el nuevo enemigo
     for (int i = 0; i < MAX_ENEMY_BULLETS; i++)
     {
         initEnemyBullet(&game->enemy_bullets[i]);
@@ -51,7 +52,7 @@ void initGame(Game *game)
 void updateGame(Game *game, char input)
 {
     updateShip(&game->ship, input);
-    if (input == 'k')
+    if (input == ' ')
     {
         addBullet(game, game->ship.x, game->ship.y - 1); // Disparo un espacio por encima de la nave
     }
@@ -60,12 +61,14 @@ void updateGame(Game *game, char input)
         updateBullet(&game->bullets[i]);
     }
     updateEnemy(&game->enemy);
+    updateMovingEnemy(&game->moving_enemy); // Actualiza el nuevo enemigo
 
     // Lógica para disparar la nave enemiga (por ejemplo, cada cierto tiempo)
     static int fire_counter = 0;
-    if (fire_counter++ > 20)
+    if (fire_counter++ > 10)
     {
         fireEnemyBullet(game->enemy_bullets, &game->enemy);
+        fireMovingEnemyBullet(game->enemy_bullets, &game->moving_enemy); // Disparo del nuevo enemigo
         fire_counter = 0;
     }
     for (int i = 0; i < MAX_ENEMY_BULLETS; i++)
@@ -111,6 +114,7 @@ void renderGame(Game *game)
 
     // Dibuja la nave enemiga y sus disparos
     renderEnemy(&game->enemy);
+    renderMovingEnemy(&game->moving_enemy); // Dibuja el nuevo enemigo
     for (int i = 0; i < MAX_ENEMY_BULLETS; i++)
     {
         renderEnemyBullet(&game->enemy_bullets[i]);

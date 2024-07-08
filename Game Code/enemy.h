@@ -16,6 +16,19 @@ typedef struct
     int active;
 } EnemyBullet;
 
+typedef struct
+{
+    int x;
+    int y;
+    int active;
+    int direction; // 1 para derecha, -1 para izquierda
+} MovingEnemy;
+
+void initMovingEnemy(MovingEnemy *enemy);
+void updateMovingEnemy(MovingEnemy *enemy);
+void renderMovingEnemy(MovingEnemy *enemy);
+void fireMovingEnemyBullet(EnemyBullet bullets[], MovingEnemy *enemy);
+
 void initEnemy(Enemy *enemy);
 void updateEnemy(Enemy *enemy);
 void renderEnemy(Enemy *enemy);

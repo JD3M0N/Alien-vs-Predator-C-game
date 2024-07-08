@@ -14,6 +14,7 @@ typedef struct
     Bullet *bullets;
     int bullet_count;
     Enemy enemy;
+    MovingEnemy moving_enemy; // Añade el nuevo enemigo
     EnemyBullet enemy_bullets[MAX_ENEMY_BULLETS];
 } Game;
 
