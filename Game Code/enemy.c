@@ -2,20 +2,28 @@
 #include "enemy.h"
 #include "game.h"
 
+// Funciones para Enemy
 void initEnemy(Enemy *enemy)
 {
-    enemy->x = FIELD_WIDTH / 2;
-    enemy->y = 1; // Posición inicial en la parte superior del campo
+    enemy->base.x = FIELD_WIDTH / 2;
+    enemy->base.y = 1;
+    enemy->base.active = 1;
+    enemy->base.update = updateEnemy;
+    enemy->base.render = renderEnemy;
+    enemy->base.fire = fireEnemyBullet;
 }
 
-void updateEnemy(Enemy *enemy)
+void updateEnemy(NaveEnemiga *enemy)
 {
-    // Lógica de movimiento de la nave enemiga (por ahora, estática)
+    // Implementar lógica de actualización para Enemy
 }
 
-void renderEnemy(Enemy *enemy)
+void renderEnemy(NaveEnemiga *enemy)
 {
-    printf("\033[%d;%dH^", enemy->y + 1, enemy->x + 1);
+    if (enemy->active)
+    {
+        printf("\033[%d;%dH^", enemy->y + 1, enemy->x + 1);
+    }
 }
 
 void initEnemyBullet(EnemyBullet *bullet)
@@ -25,7 +33,7 @@ void initEnemyBullet(EnemyBullet *bullet)
     bullet->active = 0;
 }
 
-void fireEnemyBullet(EnemyBullet bullets[], Enemy *enemy)
+void fireEnemyBullet(NaveEnemiga *enemy, EnemyBullet bullets[])
 {
     for (int i = 0; i < MAX_ENEMY_BULLETS; i++)
     {
@@ -59,27 +67,32 @@ void renderEnemyBullet(EnemyBullet *bullet)
     }
 }
 
+// Funciones para MovingEnemy
 void initMovingEnemy(MovingEnemy *enemy)
 {
-    enemy->x = FIELD_WIDTH / 2;
-    enemy->y = 2; // Posición inicial más abajo que el primer enemigo
-    enemy->active = 1;
-    enemy->direction = 1; // Empieza moviéndose a la derecha
+    enemy->base.x = FIELD_WIDTH / 2;
+    enemy->base.y = 2;
+    enemy->base.active = 1;
+    enemy->base.update = updateMovingEnemy;
+    enemy->base.render = renderMovingEnemy;
+    enemy->base.fire = fireMovingEnemyBullet;
+    enemy->direction = 1;
 }
 
-void updateMovingEnemy(MovingEnemy *enemy)
+void updateMovingEnemy(NaveEnemiga *enemy)
 {
-    if (enemy->active)
+    MovingEnemy *moving_enemy = (MovingEnemy *)enemy; // Convertir a MovingEnemy
+    if (moving_enemy->base.active)
     {
-        enemy->x += enemy->direction;
-        if (enemy->x <= 0 || enemy->x >= FIELD_WIDTH - 1)
+        moving_enemy->base.x += moving_enemy->direction;
+        if (moving_enemy->base.x <= 0 || moving_enemy->base.x >= FIELD_WIDTH - 1)
         {
-            enemy->direction *= -1; // Cambia de dirección al llegar a los bordes
+            moving_enemy->direction *= -1;
         }
     }
 }
 
-void renderMovingEnemy(MovingEnemy *enemy)
+void renderMovingEnemy(NaveEnemiga *enemy)
 {
     if (enemy->active)
     {
@@ -87,7 +100,7 @@ void renderMovingEnemy(MovingEnemy *enemy)
     }
 }
 
-void fireMovingEnemyBullet(EnemyBullet bullets[], MovingEnemy *enemy)
+void fireMovingEnemyBullet(NaveEnemiga *enemy, EnemyBullet bullets[])
 {
     for (int i = 0; i < MAX_ENEMY_BULLETS; i++)
     {

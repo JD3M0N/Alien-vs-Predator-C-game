@@ -41,8 +41,16 @@ void initGame(Game *game)
     initShip(&game->ship);
     game->bullets = NULL;
     game->bullet_count = 0;
-    initEnemy(&game->enemy);
-    initMovingEnemy(&game->moving_enemy); // Inicializa el nuevo enemigo
+
+    // Inicializar enemigos
+    static Enemy enemy;
+    static MovingEnemy moving_enemy;
+    initEnemy(&enemy);
+    initMovingEnemy(&moving_enemy);
+
+    game->enemies[0] = (NaveEnemiga *)&enemy;
+    game->enemies[1] = (NaveEnemiga *)&moving_enemy;
+
     for (int i = 0; i < MAX_ENEMY_BULLETS; i++)
     {
         initEnemyBullet(&game->enemy_bullets[i]);
@@ -54,21 +62,27 @@ void updateGame(Game *game, char input)
     updateShip(&game->ship, input);
     if (input == ' ')
     {
-        addBullet(game, game->ship.x, game->ship.y - 1); // Disparo un espacio por encima de la nave
+        addBullet(game, game->ship.x, game->ship.y - 1);
     }
     for (int i = 0; i < game->bullet_count; i++)
     {
         updateBullet(&game->bullets[i]);
     }
-    updateEnemy(&game->enemy);
-    updateMovingEnemy(&game->moving_enemy); // Actualiza el nuevo enemigo
+
+    // Actualizar enemigos
+    for (int i = 0; i < 2; i++)
+    {
+        game->enemies[i]->update(game->enemies[i]);
+    }
 
     // Lógica para disparar la nave enemiga (por ejemplo, cada cierto tiempo)
     static int fire_counter = 0;
-    if (fire_counter++ > 10)
+    if (fire_counter++ > 20)
     {
-        fireEnemyBullet(game->enemy_bullets, &game->enemy);
-        fireMovingEnemyBullet(game->enemy_bullets, &game->moving_enemy); // Disparo del nuevo enemigo
+        for (int i = 0; i < 2; i++)
+        {
+            game->enemies[i]->fire(game->enemies[i], game->enemy_bullets);
+        }
         fire_counter = 0;
     }
     for (int i = 0; i < MAX_ENEMY_BULLETS; i++)
@@ -82,7 +96,7 @@ void updateGame(Game *game, char input)
 
 void renderGame(Game *game)
 {
-    system("cls"); // Limpia la pantalla en Windows
+    system("cls");
 
     // Dibuja los bordes del campo
     for (int i = 0; i <= FIELD_WIDTH + 1; i++)
@@ -112,9 +126,11 @@ void renderGame(Game *game)
         renderBullet(&game->bullets[i]);
     }
 
-    // Dibuja la nave enemiga y sus disparos
-    renderEnemy(&game->enemy);
-    renderMovingEnemy(&game->moving_enemy); // Dibuja el nuevo enemigo
+    // Dibuja los enemigos
+    for (int i = 0; i < 2; i++)
+    {
+        game->enemies[i]->render(game->enemies[i]);
+    }
     for (int i = 0; i < MAX_ENEMY_BULLETS; i++)
     {
         renderEnemyBullet(&game->enemy_bullets[i]);

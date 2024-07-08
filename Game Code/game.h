@@ -13,8 +13,7 @@ typedef struct
     Ship ship;
     Bullet *bullets;
     int bullet_count;
-    Enemy enemy;
-    MovingEnemy moving_enemy; // Añade el nuevo enemigo
+    NaveEnemiga *enemies[2]; // Array de punteros a NaveEnemiga
     EnemyBullet enemy_bullets[MAX_ENEMY_BULLETS];
 } Game;
 
