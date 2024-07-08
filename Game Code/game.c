@@ -178,7 +178,7 @@ void renderGame(Game *game)
     }
 
     // Mostrar vidas del jugador
-    printf("\033[%d;%dHVidas: %d\n", FIELD_HEIGHT + 2, 0, game->ship.lives);
+    printf("\033[%d;%dHLIVES: %d\n", FIELD_HEIGHT + 3, 0, game->ship.lives);
 
     // Mostrar mensaje de fin de juego si es necesario
     if (game->game_over)

@@ -35,6 +35,10 @@ void initEnemyBullet(EnemyBullet *bullet)
 
 void fireEnemyBullet(NaveEnemiga *enemy, EnemyBullet bullets[])
 {
+    if (!enemy->active)
+    {
+        return; // No disparar si el enemigo no está activo
+    }
     for (int i = 0; i < MAX_ENEMY_BULLETS; i++)
     {
         if (!bullets[i].active)
@@ -102,6 +106,10 @@ void renderMovingEnemy(NaveEnemiga *enemy)
 
 void fireMovingEnemyBullet(NaveEnemiga *enemy, EnemyBullet bullets[])
 {
+    if (!enemy->active)
+    {
+        return; // No disparar si el enemigo no está activo
+    }
     for (int i = 0; i < MAX_ENEMY_BULLETS; i++)
     {
         if (!bullets[i].active)
