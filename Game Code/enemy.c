@@ -3,14 +3,16 @@
 #include "game.h"
 
 // Funciones para Enemy
-void initEnemy(Enemy *enemy)
+void initEnemy(NaveEnemiga *enemy)
 {
-    enemy->base.x = FIELD_WIDTH / 2;
-    enemy->base.y = 1;
-    enemy->base.active = 1;
-    enemy->base.update = updateEnemy;
-    enemy->base.render = renderEnemy;
-    enemy->base.fire = fireEnemyBullet;
+    enemy->x = 5;
+    enemy->y = 1;
+    enemy->active = 1;
+    enemy->update = updateEnemy;
+    enemy->render = renderEnemy;
+    enemy->fire = fireEnemyBullet;
+    enemy->moveDown = moveEnemyDown;
+    enemy->moveSide = NULL; // Por defecto, no se mueve lateralmente
 }
 
 void updateEnemy(NaveEnemiga *enemy)
@@ -72,28 +74,28 @@ void renderEnemyBullet(EnemyBullet *bullet)
 }
 
 // Funciones para MovingEnemy
-void initMovingEnemy(MovingEnemy *enemy)
-{
-    enemy->base.x = FIELD_WIDTH / 2;
-    enemy->base.y = 2;
-    enemy->base.active = 1;
-    enemy->base.update = updateMovingEnemy;
-    enemy->base.render = renderMovingEnemy;
-    enemy->base.fire = fireMovingEnemyBullet;
-    enemy->direction = 1;
-}
-
 void updateMovingEnemy(NaveEnemiga *enemy)
 {
     MovingEnemy *moving_enemy = (MovingEnemy *)enemy; // Convertir a MovingEnemy
     if (moving_enemy->base.active)
     {
-        moving_enemy->base.x += moving_enemy->direction;
-        if (moving_enemy->base.x <= 0 || moving_enemy->base.x >= FIELD_WIDTH - 1)
-        {
-            moving_enemy->direction *= -1;
-        }
+        moveEnemySide(enemy); // Mueve lateralmente
+        moveEnemyDown(enemy); // Mueve hacia abajo
     }
+}
+void initMovingEnemy(NaveEnemiga *enemy)
+{
+    enemy->x = 15;
+    enemy->y = 1;
+    enemy->active = 1;
+    enemy->update = updateMovingEnemy; // Asegúrate de que apunte a la función correcta
+    enemy->render = renderEnemy;
+    enemy->fire = fireEnemyBullet;
+    enemy->moveDown = moveEnemyDown;
+    enemy->moveSide = moveEnemySide; // Habilitar el movimiento lateral
+
+    MovingEnemy *moving_enemy = (MovingEnemy *)enemy;
+    moving_enemy->direction = 1; // Inicializa la dirección
 }
 
 void renderMovingEnemy(NaveEnemiga *enemy)
@@ -119,5 +121,29 @@ void fireMovingEnemyBullet(NaveEnemiga *enemy, EnemyBullet bullets[])
             bullets[i].active = 1;
             break;
         }
+    }
+}
+
+void moveEnemyDown(NaveEnemiga *enemy)
+{
+    if (enemy->active)
+    {
+        enemy->y++;
+    }
+}
+
+void moveEnemySide(NaveEnemiga *enemy)
+{
+    if (!enemy->active)
+    {
+        return;
+    }
+
+    static int direction = 1;
+    enemy->x += direction;
+    if (enemy->x <= 0 || enemy->x >= FIELD_WIDTH - 1)
+    {
+        direction = -direction;
+        enemy->y++; // Baja un nivel al cambiar de dirección
     }
 }

@@ -6,7 +6,7 @@
 #include "enemy.h"
 
 #define FIELD_WIDTH 40
-#define FIELD_HEIGHT 20
+#define FIELD_HEIGHT 40
 
 typedef struct
 {
@@ -22,6 +22,6 @@ void initGame(Game *game);
 void updateGame(Game *game, char input);
 void renderGame(Game *game);
 void addBullet(Game *game, int x, int y);
-void checkCollisions(Game* game);
+void checkCollisions(Game *game);
 
 #endif

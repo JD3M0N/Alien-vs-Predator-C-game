@@ -19,15 +19,17 @@ typedef struct
 
 // =+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+
 // ======================= ALIENS SHIPS STRUCTS ===========================
-struct NaveEnemiga
+typedef struct NaveEnemiga
 {
     int x;
     int y;
     int active;
-    void (*update)(NaveEnemiga *enemy);
-    void (*render)(NaveEnemiga *enemy);
-    void (*fire)(NaveEnemiga *enemy, EnemyBullet bullets[]);
-};
+    void (*update)(struct NaveEnemiga *);
+    void (*render)(struct NaveEnemiga *);
+    void (*fire)(struct NaveEnemiga *, EnemyBullet bullets[]);
+    void (*moveDown)(struct NaveEnemiga *);
+    void (*moveSide)(struct NaveEnemiga *); // Nueva función para movimiento lateral
+} NaveEnemiga;
 
 typedef struct
 {
@@ -39,27 +41,24 @@ typedef struct
     NaveEnemiga base; // NaveEnemiga como base
     int direction;    // 1 para derecha, -1 para izquierda
 } MovingEnemy;
+
 // ======================= ALIENS SHIPS STRUCTS ===========================
 // =+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+
 
 // =+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+
 // ============================== FUNCTIONS ===============================
 
-void initEnemy(Enemy *enemy);
-void updateEnemy(NaveEnemiga *enemy);                            // Cambia el tipo de argumento a NaveEnemiga
-void renderEnemy(NaveEnemiga *enemy);                            // Cambia el tipo de argumento a NaveEnemiga
-void fireEnemyBullet(NaveEnemiga *enemy, EnemyBullet bullets[]); // Cambia el tipo de argumento a NaveEnemiga
+void initEnemy(NaveEnemiga *enemy);
+void initMovingEnemy(NaveEnemiga *enemy);
+void updateEnemy(NaveEnemiga *enemy);
+void renderEnemy(NaveEnemiga *enemy);
+void fireEnemyBullet(NaveEnemiga *enemy, EnemyBullet bullets[]);
+void moveEnemyDown(NaveEnemiga *enemy);
+void moveEnemySide(NaveEnemiga *enemy); // Nueva función
 
-// Funciones para MovingEnemy
-void initMovingEnemy(MovingEnemy *enemy);
-void updateMovingEnemy(NaveEnemiga *enemy);                            // Cambia el tipo de argumento a NaveEnemiga
-void renderMovingEnemy(NaveEnemiga *enemy);                            // Cambia el tipo de argumento a NaveEnemiga
-void fireMovingEnemyBullet(NaveEnemiga *enemy, EnemyBullet bullets[]); // Cambia el tipo de argumento a NaveEnemiga
-
-// void initEnemyBullet(EnemyBullet *bullet);
-// void fireEnemyBullet(EnemyBullet bullets[], Enemy *enemy);
-// void updateEnemyBullet(EnemyBullet *bullet);
-// void renderEnemyBullet(EnemyBullet *bullet);
+void initEnemyBullet(EnemyBullet *bullet);
+void updateEnemyBullet(EnemyBullet *bullet);
+void renderEnemyBullet(EnemyBullet *bullet);
 
 // ============================== FUNCTIONS ===============================
 // =+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+

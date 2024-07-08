@@ -18,6 +18,14 @@ void checkCollisions(Game *game)
                 {
                     bullet->active = 0;
                     enemy->active = 0;
+                    // Desactivar las balas del enemigo si el enemigo es destruido
+                    for (int k = 0; k < MAX_ENEMY_BULLETS; k++)
+                    {
+                        if (game->enemy_bullets[k].x == enemy->x && game->enemy_bullets[k].y >= enemy->y)
+                        {
+                            game->enemy_bullets[k].active = 0;
+                        }
+                    }
                 }
             }
         }
@@ -61,8 +69,8 @@ void checkCollisions(Game *game)
                     {
                         game->bullets[i].active = 0;
                         game->enemy_bullets[j].active = 0;
-                        printf("\033[%d;%dH*", game->bullets[i].y, game->bullets[i].x + 1);                 // Mostrar colisión
-                        printf("\033[%d;%dH*", game->enemy_bullets[j].y + 1, game->enemy_bullets[j].x + 1); // Mostrar colisión
+                        printf("\033[%d;%dH*", game->bullets[i].y + 1, game->bullets[i].x + 1);             // Mostrar colisión
+                        printf("\033[%d;%dH*", game->enemy_bullets[j].y + 2, game->enemy_bullets[j].x + 1); // Mostrar colisión
                     }
                 }
             }
@@ -100,11 +108,14 @@ void updateGame(Game *game, char input)
         return; // No actualizar si el juego ha terminado
     }
 
+    // Actualizar la nave del jugador
     updateShip(&game->ship, input);
     if (input == ' ')
     {
         addBullet(game, game->ship.x, game->ship.y - 1);
     }
+
+    // Actualizar balas del jugador
     for (int i = 0; i < game->bullet_count; i++)
     {
         updateBullet(&game->bullets[i]);
@@ -113,19 +124,43 @@ void updateGame(Game *game, char input)
     // Actualizar enemigos
     for (int i = 0; i < 2; i++)
     {
-        game->enemies[i]->update(game->enemies[i]);
+        if (game->enemies[i]->active)
+        {
+            game->enemies[i]->update(game->enemies[i]); // Actualiza el enemigo
+            game->enemies[i]->moveDown(game->enemies[i]); // Mover enemigos hacia abajo
+            if (game->enemies[i]->moveSide)
+            {
+                game->enemies[i]->moveSide(game->enemies[i]); // Mover lateralmente si está habilitado
+            }
+
+            // Verificar si el enemigo ha llegado a la tierra
+            if (game->enemies[i]->y >= FIELD_HEIGHT - 1)
+            {
+                game->enemies[i]->active = 0;
+                game->ship.lives--;
+                if (game->ship.lives <= 0)
+                {
+                    game->game_over = 1; // Termina el juego si las vidas llegan a cero
+                }
+            }
+        }
     }
 
     // Lógica para disparar la nave enemiga (por ejemplo, cada cierto tiempo)
     static int fire_counter = 0;
-    if (fire_counter++ > 20)
+    if (fire_counter++ > 8)
     {
         for (int i = 0; i < 2; i++)
         {
-            game->enemies[i]->fire(game->enemies[i], game->enemy_bullets);
+            if (game->enemies[i]->active)
+            {
+                game->enemies[i]->fire(game->enemies[i], game->enemy_bullets);
+            }
         }
         fire_counter = 0;
     }
+
+    // Actualizar balas enemigas
     for (int i = 0; i < MAX_ENEMY_BULLETS; i++)
     {
         updateEnemyBullet(&game->enemy_bullets[i]);
@@ -134,6 +169,7 @@ void updateGame(Game *game, char input)
     // Verificar colisiones
     checkCollisions(game);
 }
+
 
 void renderGame(Game *game)
 {
