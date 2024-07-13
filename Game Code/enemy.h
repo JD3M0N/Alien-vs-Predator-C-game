@@ -24,6 +24,7 @@ typedef struct NaveEnemiga
     int x;
     int y;
     int active;
+    int direction;
     void (*update)(struct NaveEnemiga *);
     void (*render)(struct NaveEnemiga *);
     void (*fire)(struct NaveEnemiga *, EnemyBullet bullets[]);
@@ -31,16 +32,16 @@ typedef struct NaveEnemiga
     void (*moveSide)(struct NaveEnemiga *); // Nueva función para movimiento lateral
 } NaveEnemiga;
 
-typedef struct
-{
-    NaveEnemiga base; // NaveEnemiga como base
-} Enemy;
+// typedef struct
+// {
+//     NaveEnemiga base; // NaveEnemiga como base
+// } Enemy;
 
-typedef struct
-{
-    NaveEnemiga base; // NaveEnemiga como base
-    int direction;    // 1 para derecha, -1 para izquierda
-} MovingEnemy;
+// typedef struct
+// {
+//     NaveEnemiga base; // NaveEnemiga como base
+//     int direction;    // 1 para derecha, -1 para izquierda
+// } MovingEnemy;
 
 // ======================= ALIENS SHIPS STRUCTS ===========================
 // =+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+

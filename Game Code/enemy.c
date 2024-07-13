@@ -8,11 +8,25 @@ void initEnemy(NaveEnemiga *enemy)
     enemy->x = 5;
     enemy->y = 1;
     enemy->active = 1;
+    enemy->direction = NULL;
     enemy->update = updateEnemy;
     enemy->render = renderEnemy;
     enemy->fire = fireEnemyBullet;
     enemy->moveDown = moveEnemyDown;
     enemy->moveSide = NULL; // Por defecto, no se mueve lateralmente
+}
+
+void initMovingEnemy(NaveEnemiga *enemy)
+{
+    enemy->x = 15;
+    enemy->y = 1;
+    enemy->active = 1;
+    enemy->direction = 1;        // Inicializa la dirección
+    enemy->update = updateEnemy; // Asegúrate de que apunte a la función correcta
+    enemy->render = renderEnemy;
+    enemy->fire = fireEnemyBullet;
+    enemy->moveDown = moveEnemyDown;
+    enemy->moveSide = moveEnemySide; // Habilitar el movimiento lateral
 }
 
 void updateEnemy(NaveEnemiga *enemy)
@@ -71,31 +85,6 @@ void renderEnemyBullet(EnemyBullet *bullet)
     {
         printf("\033[%d;%dH|", bullet->y + 1, bullet->x + 1);
     }
-}
-
-// Funciones para MovingEnemy
-void updateMovingEnemy(NaveEnemiga *enemy)
-{
-    MovingEnemy *moving_enemy = (MovingEnemy *)enemy; // Convertir a MovingEnemy
-    if (moving_enemy->base.active)
-    {
-        moveEnemySide(enemy); // Mueve lateralmente
-        moveEnemyDown(enemy); // Mueve hacia abajo
-    }
-}
-void initMovingEnemy(NaveEnemiga *enemy)
-{
-    enemy->x = 15;
-    enemy->y = 1;
-    enemy->active = 1;
-    enemy->update = updateMovingEnemy; // Asegúrate de que apunte a la función correcta
-    enemy->render = renderEnemy;
-    enemy->fire = fireEnemyBullet;
-    enemy->moveDown = moveEnemyDown;
-    enemy->moveSide = moveEnemySide; // Habilitar el movimiento lateral
-
-    MovingEnemy *moving_enemy = (MovingEnemy *)enemy;
-    moving_enemy->direction = 1; // Inicializa la dirección
 }
 
 void renderMovingEnemy(NaveEnemiga *enemy)
