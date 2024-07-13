@@ -127,12 +127,15 @@ void updateGame(Game *game, char input)
         if (game->enemies[i]->active)
         {
             game->enemies[i]->update(game->enemies[i]); // Actualiza el enemigo
+            /*
+
             game->enemies[i]->moveDown(game->enemies[i]); // Mover enemigos hacia abajo
             if (game->enemies[i]->moveSide)
             {
                 game->enemies[i]->moveSide(game->enemies[i]); // Mover lateralmente si está habilitado
             }
 
+            */
             // Verificar si el enemigo ha llegado a la tierra
             if (game->enemies[i]->y >= FIELD_HEIGHT - 1)
             {
@@ -170,29 +173,28 @@ void updateGame(Game *game, char input)
     checkCollisions(game);
 }
 
-
 void renderGame(Game *game)
 {
     system("cls");
 
-    // Dibuja los bordes del campo
+    // Dibuja los bordes del campo con letras del alfabeto
     for (int i = 0; i <= FIELD_WIDTH + 1; i++)
     {
-        printf("#");
+        printf("%c", ALPHABET_UPPER[i % 26]);
     }
     printf("\n");
     for (int i = 0; i < FIELD_HEIGHT; i++)
     {
-        printf("#");
+        printf("%c", ALPHABET_UPPER[i % 26]);
         for (int j = 0; j < FIELD_WIDTH; j++)
         {
             printf(" ");
         }
-        printf("#\n");
+        printf("%c\n", ALPHABET_UPPER[i % 26]);
     }
     for (int i = 0; i <= FIELD_WIDTH + 1; i++)
     {
-        printf("#");
+        printf("%c", ALPHABET_UPPER[i % 26]);
     }
     printf("\n");
 

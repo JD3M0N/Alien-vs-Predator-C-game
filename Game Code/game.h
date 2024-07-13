@@ -1,3 +1,6 @@
+#define ALPHABET_UPPER "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+#define ALPHABET_LOWER "abcdefghijklmnopqrstuvwxyz"
+
 #ifndef GAME_H
 #define GAME_H
 
