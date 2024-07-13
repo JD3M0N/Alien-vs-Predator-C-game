@@ -1,5 +1,5 @@
 #include <stdio.h>
-#include <stdlib.h> // Para system y malloc
+#include <stdlib.h>
 #include "game.h"
 #include "enemy.h"
 
@@ -11,17 +11,17 @@ void checkCollisions(Game *game)
         Bullet *bullet = &game->bullets[i];
         if (bullet->active)
         {
-            for (int j = 0; j < 2; j++)
+            for (int j = 0; j < game->total_active_enemy_ships; j++)
             {
-                NaveEnemiga *enemy = game->enemies[j];
-                if (enemy->active && bullet->x == enemy->x && bullet->y == enemy->y)
+                NaveEnemiga enemy = game->enemies[j];
+                if (enemy.active && bullet->x == enemy.x && bullet->y == enemy.y)
                 {
                     bullet->active = 0;
-                    enemy->active = 0;
+                    enemy.active = 0;
                     // Desactivar las balas del enemigo si el enemigo es destruido
                     for (int k = 0; k < MAX_ENEMY_BULLETS; k++)
                     {
-                        if (game->enemy_bullets[k].x == enemy->x && game->enemy_bullets[k].y >= enemy->y)
+                        if (game->enemy_bullets[k].x == enemy.x && game->enemy_bullets[k].y >= enemy.y)
                         {
                             game->enemy_bullets[k].active = 0;
                         }
@@ -85,13 +85,15 @@ void initGame(Game *game)
     game->bullet_count = 0;
 
     // Inicializar enemigos
-    static Enemy enemy;
-    static MovingEnemy moving_enemy;
+    static NaveEnemiga enemy;
+    static NaveEnemiga moving_enemy;
     initEnemy(&enemy);
     initMovingEnemy(&moving_enemy);
 
-    game->enemies[0] = (NaveEnemiga *)&enemy;
-    game->enemies[1] = (NaveEnemiga *)&moving_enemy;
+    game->enemies[0] = enemy;
+    game->enemies[1] = moving_enemy;
+
+    game->total_active_enemy_ships = 2;
 
     for (int i = 0; i < MAX_ENEMY_BULLETS; i++)
     {
@@ -110,7 +112,8 @@ void updateGame(Game *game, char input)
 
     // Actualizar la nave del jugador
     updateShip(&game->ship, input);
-    if (input == ' ')
+
+    if (input == 'k')
     {
         addBullet(game, game->ship.x, game->ship.y - 1);
     }
@@ -122,21 +125,22 @@ void updateGame(Game *game, char input)
     }
 
     // Actualizar enemigos
-    for (int i = 0; i < 2; i++)
+    for (int i = 0; i < game->total_active_enemy_ships; i++)
     {
-        if (game->enemies[i]->active)
+        NaveEnemiga naveEnemiga = game->enemies[i];
+        if (naveEnemiga.active == 1)
         {
-            game->enemies[i]->update(game->enemies[i]); // Actualiza el enemigo
-            game->enemies[i]->moveDown(game->enemies[i]); // Mover enemigos hacia abajo
-            if (game->enemies[i]->moveSide)
+            naveEnemiga.update(&naveEnemiga);   // Actualiza el enemigo
+            naveEnemiga.moveDown(&naveEnemiga); // Mover enemigos hacia abajo
+            if (naveEnemiga.moveSide)
             {
-                game->enemies[i]->moveSide(game->enemies[i]); // Mover lateralmente si está habilitado
+                naveEnemiga.moveSide(&naveEnemiga); // Mover lateralmente si está habilitado
             }
 
             // Verificar si el enemigo ha llegado a la tierra
-            if (game->enemies[i]->y >= FIELD_HEIGHT - 1)
+            if (naveEnemiga.y >= FIELD_HEIGHT - 1)
             {
-                game->enemies[i]->active = 0;
+                naveEnemiga.active = 0;
                 game->ship.lives--;
                 if (game->ship.lives <= 0)
                 {
@@ -144,17 +148,20 @@ void updateGame(Game *game, char input)
                 }
             }
         }
+
+        game->enemies[i] = naveEnemiga;
     }
 
     // Lógica para disparar la nave enemiga (por ejemplo, cada cierto tiempo)
     static int fire_counter = 0;
     if (fire_counter++ > 8)
     {
-        for (int i = 0; i < 2; i++)
+        for (int i = 0; i < game->total_active_enemy_ships; i++)
         {
-            if (game->enemies[i]->active)
+            NaveEnemiga naveEnemiga = game->enemies[i];
+            if (naveEnemiga.active)
             {
-                game->enemies[i]->fire(game->enemies[i], game->enemy_bullets);
+                naveEnemiga.fire(&naveEnemiga, game->enemy_bullets);
             }
         }
         fire_counter = 0;
@@ -169,7 +176,6 @@ void updateGame(Game *game, char input)
     // Verificar colisiones
     checkCollisions(game);
 }
-
 
 void renderGame(Game *game)
 {
@@ -204,9 +210,10 @@ void renderGame(Game *game)
     }
 
     // Dibuja los enemigos
-    for (int i = 0; i < 2; i++)
+    for (int i = 0; i < game->total_active_enemy_ships; i++)
     {
-        game->enemies[i]->render(game->enemies[i]);
+        NaveEnemiga naveEnemiga = game->enemies[i];
+        naveEnemiga.render(&naveEnemiga);
     }
     for (int i = 0; i < MAX_ENEMY_BULLETS; i++)
     {
