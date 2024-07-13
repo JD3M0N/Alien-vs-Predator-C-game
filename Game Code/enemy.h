@@ -19,12 +19,20 @@ typedef struct
 
 // =+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+
 // ======================= ALIENS SHIPS STRUCTS ===========================
+
+typedef enum
+{
+    BASIC_TYPE,
+    MOVING_TYPE,
+
+    ENEMY_TYPE_COUNT = 2
+} EnemyType;
 typedef struct NaveEnemiga
 {
     int x;
     int y;
     int active;
-    int direction;
+    EnemyType type;
     void (*update)(struct NaveEnemiga *);
     void (*render)(struct NaveEnemiga *);
     void (*fire)(struct NaveEnemiga *, EnemyBullet bullets[]);
@@ -49,6 +57,7 @@ typedef struct NaveEnemiga
 // =+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+
 // ============================== FUNCTIONS ===============================
 
+void initGeneralEnemy(NaveEnemiga *enemy);
 void initEnemy(NaveEnemiga *enemy);
 void initMovingEnemy(NaveEnemiga *enemy);
 void updateEnemy(NaveEnemiga *enemy);

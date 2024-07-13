@@ -3,9 +3,36 @@
 #include "game.h"
 #include "enemy.h"
 
+void initGame(Game *game)
+{
+    initShip(&game->ship);
+    game->bullets = NULL;
+    game->bullet_count = 0;
+
+    game->total_active_enemy_ships = 0;
+
+    // Inicializar enemigos
+    // static NaveEnemiga enemy;
+    // static NaveEnemiga moving_enemy;
+    // initEnemy(&enemy);
+    // initMovingEnemy(&moving_enemy);
+
+    // game->enemies[0] = enemy;
+    // game->enemies[1] = moving_enemy;
+
+    // game->total_active_enemy_ships = 2;
+
+    for (int i = 0; i < MAX_ENEMY_BULLETS; i++)
+    {
+        initEnemyBullet(&game->enemy_bullets[i]);
+    }
+
+    game->game_over = 0; // Inicializa el juego como no terminado
+}
+
 void checkCollisions(Game *game)
 {
-    // Verificar colisiones entre balas del jugador y enemigos
+    // Verificar colisiones entre balas del jugador y nave enemiga
     for (int i = 0; i < game->bullet_count; i++)
     {
         Bullet *bullet = &game->bullets[i];
@@ -13,19 +40,10 @@ void checkCollisions(Game *game)
         {
             for (int j = 0; j < game->total_active_enemy_ships; j++)
             {
-                NaveEnemiga enemy = game->enemies[j];
-                if (enemy.active && bullet->x == enemy.x && bullet->y == enemy.y)
+                if (game->enemies[j].active && bullet->x == game->enemies[j].x && bullet->y == game->enemies[j].y)
                 {
                     bullet->active = 0;
-                    enemy.active = 0;
-                    // Desactivar las balas del enemigo si el enemigo es destruido
-                    for (int k = 0; k < MAX_ENEMY_BULLETS; k++)
-                    {
-                        if (game->enemy_bullets[k].x == enemy.x && game->enemy_bullets[k].y >= enemy.y)
-                        {
-                            game->enemy_bullets[k].active = 0;
-                        }
-                    }
+                    game->enemies[j].active = 0;
                 }
             }
         }
@@ -78,31 +96,6 @@ void checkCollisions(Game *game)
     }
 }
 
-void initGame(Game *game)
-{
-    initShip(&game->ship);
-    game->bullets = NULL;
-    game->bullet_count = 0;
-
-    // Inicializar enemigos
-    static NaveEnemiga enemy;
-    static NaveEnemiga moving_enemy;
-    initEnemy(&enemy);
-    initMovingEnemy(&moving_enemy);
-
-    game->enemies[0] = enemy;
-    game->enemies[1] = moving_enemy;
-
-    game->total_active_enemy_ships = 2;
-
-    for (int i = 0; i < MAX_ENEMY_BULLETS; i++)
-    {
-        initEnemyBullet(&game->enemy_bullets[i]);
-    }
-
-    game->game_over = 0; // Inicializa el juego como no terminado
-}
-
 void updateGame(Game *game, char input)
 {
     if (game->game_over)
@@ -130,22 +123,13 @@ void updateGame(Game *game, char input)
         NaveEnemiga naveEnemiga = game->enemies[i];
         if (naveEnemiga.active == 1)
         {
-<<<<<<< HEAD
-            game->enemies[i]->update(game->enemies[i]); // Actualiza el enemigo
-            /*
-
-            game->enemies[i]->moveDown(game->enemies[i]); // Mover enemigos hacia abajo
-            if (game->enemies[i]->moveSide)
-=======
             naveEnemiga.update(&naveEnemiga);   // Actualiza el enemigo
             naveEnemiga.moveDown(&naveEnemiga); // Mover enemigos hacia abajo
             if (naveEnemiga.moveSide)
->>>>>>> 8d21b98362f2b366963975248a0bb7026e9ec471
             {
                 naveEnemiga.moveSide(&naveEnemiga); // Mover lateralmente si está habilitado
             }
 
-            */
             // Verificar si el enemigo ha llegado a la tierra
             if (naveEnemiga.y >= FIELD_HEIGHT - 1)
             {
@@ -180,6 +164,19 @@ void updateGame(Game *game, char input)
     for (int i = 0; i < MAX_ENEMY_BULLETS; i++)
     {
         updateEnemyBullet(&game->enemy_bullets[i]);
+    }
+
+    // Generar enemigos random
+    if (rand() % 100 <= 7)
+    {
+        if (game->total_active_enemy_ships < ENEMY_TOTAL_AMOUNT)
+        {
+            static NaveEnemiga naveEnemiga;
+            initGeneralEnemy(&naveEnemiga);
+
+            game->enemies[game->total_active_enemy_ships] = naveEnemiga;
+            game->total_active_enemy_ships++;
+        }
     }
 
     // Verificar colisiones

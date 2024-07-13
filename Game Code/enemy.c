@@ -5,10 +5,10 @@
 // Funciones para Enemy
 void initEnemy(NaveEnemiga *enemy)
 {
-    enemy->x = 5;
+    enemy->x = rand() % FIELD_WIDTH;
     enemy->y = 1;
     enemy->active = 1;
-    enemy->direction = NULL;
+    enemy->type = BASIC_TYPE;
     enemy->update = updateEnemy;
     enemy->render = renderEnemy;
     enemy->fire = fireEnemyBullet;
@@ -18,15 +18,33 @@ void initEnemy(NaveEnemiga *enemy)
 
 void initMovingEnemy(NaveEnemiga *enemy)
 {
-    enemy->x = 15;
+    enemy->x = rand() % FIELD_WIDTH;
     enemy->y = 1;
     enemy->active = 1;
-    enemy->direction = 1;        // Inicializa la dirección
+    enemy->type = MOVING_TYPE;
     enemy->update = updateEnemy; // Asegúrate de que apunte a la función correcta
     enemy->render = renderEnemy;
     enemy->fire = fireEnemyBullet;
     enemy->moveDown = moveEnemyDown;
     enemy->moveSide = moveEnemySide; // Habilitar el movimiento lateral
+}
+
+void initGeneralEnemy(NaveEnemiga *enemy)
+{
+    // EnemyType random_type = rand() % ENEMY_TYPE_COUNT;
+    EnemyType random_type = 0;
+
+    // Inicialización específica según el tipo
+    switch (random_type)
+    {
+    case BASIC_TYPE:
+        initEnemy(enemy);
+        break;
+    case MOVING_TYPE:
+        initMovingEnemy(enemy);
+        break;
+        // Agrega más casos según los tipos de enemigos
+    }
 }
 
 void updateEnemy(NaveEnemiga *enemy)
@@ -117,7 +135,10 @@ void moveEnemyDown(NaveEnemiga *enemy)
 {
     if (enemy->active)
     {
-        enemy->y++;
+        if (rand() % 100 <= 30)
+        {
+            enemy->y++;
+        }
     }
 }
 
@@ -128,11 +149,13 @@ void moveEnemySide(NaveEnemiga *enemy)
         return;
     }
 
-    static int direction = 1;
-    enemy->x += direction;
-    if (enemy->x <= 0 || enemy->x >= FIELD_WIDTH - 1)
+    if (rand() % 100 <= 30)
     {
-        direction = -direction;
-        enemy->y++; // Baja un nivel al cambiar de dirección
+        int direction = rand() % 3 - 1;
+        enemy->x += direction;
+        if (enemy->x <= 0 || enemy->x >= FIELD_WIDTH - 1)
+        {
+            direction = -direction;
+        }
     }
 }

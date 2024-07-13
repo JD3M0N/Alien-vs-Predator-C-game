@@ -6,6 +6,8 @@
 
 int main()
 {
+    srand(time(NULL)); // Inicializar rand con una semilla
+
     Game game;
     initGame(&game);
 
