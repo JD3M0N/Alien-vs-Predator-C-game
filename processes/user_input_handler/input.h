@@ -2,11 +2,12 @@
 #define INPUT
 
 #include <stdio.h>
-#include <conio.h>
-#include <windows.h>
 #include <unistd.h>
 #include <stdbool.h>
 #include <pthread.h>
+#include <termios.h> // Para configuración de terminal
+#include <fcntl.h>   // Para configuración de terminal
+#include <time.h>    // Para srand()
 
 #include "globlal_signals.h"
 
@@ -17,6 +18,20 @@ char valid_keys[3] = {'a', 'd', 'k'};
 char user_input_fr;
 
 int index = 0;
+
+char _getch(void)
+{
+    struct termios oldt, newt;
+    char ch;
+    tcgetattr(STDIN_FILENO, &oldt);
+    newt = oldt;
+    newt.c_lflag &= ~(ICANON | ECHO);
+    tcsetattr(STDIN_FILENO, TCSANOW, &newt);
+    ch = getchar();
+    tcsetattr(STDIN_FILENO, TCSANOW, &oldt);
+    return ch;
+}
+
 
 pthread_mutex_t mutex_buffer = PTHREAD_MUTEX_INITIALIZER;
 pthread_cond_t can_read = PTHREAD_COND_INITIALIZER;
@@ -65,9 +80,6 @@ void *consume_input(void *arg)
 void user_input_handler()
 {
     pthread_t get_input_tid, consume_input_tid;
-
-    // Inicializar mutex
-    mutex_buffer = PTHREAD_MUTEX_INITIALIZER;
 
     // Crear hilos productor y consumidor
     if (pthread_create(&get_input_tid, NULL, get_input, NULL) != 0)

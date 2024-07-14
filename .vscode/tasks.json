@@ -3,24 +3,17 @@
     "tasks": [
         {
             "type": "shell",
-            "label": "gcc.exe build active file",
-            "command": "gcc",
+            "label": "gcc build active file",
+            "command": "bash",
             "args": [
-                "-g",
-                "${workspaceFolder}\\Game Code\\*.c",
-                "-o",
-                "${workspaceFolder}\\game.exe"
-            ],
-            "options": {
-                "cwd": "${fileDirname}"
-            },
-            "problemMatcher": [
-                "$gcc"
+                "-c",
+                "gcc -g \"${workspaceFolder}/Game Code\"/*.c -o \"${workspaceFolder}/game\""
             ],
             "group": {
                 "kind": "build",
                 "isDefault": true
-            }
+            },
+            "detail": "Compiles the entire project"
         }
     ]
 }

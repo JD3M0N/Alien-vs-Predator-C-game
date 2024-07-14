@@ -2,8 +2,6 @@
 #define GLOBAL_SIGNALS
 
 #include <stdio.h>
-#include <conio.h>
-#include <windows.h>
 #include <unistd.h>
 #include <stdbool.h>
 #include <pthread.h>
