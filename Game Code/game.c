@@ -11,17 +11,6 @@ void initGame(Game *game)
 
     game->total_active_enemy_ships = 0;
 
-    // Inicializar enemigos
-    // static NaveEnemiga enemy;
-    // static NaveEnemiga moving_enemy;
-    // initEnemy(&enemy);
-    // initMovingEnemy(&moving_enemy);
-
-    // game->enemies[0] = enemy;
-    // game->enemies[1] = moving_enemy;
-
-    // game->total_active_enemy_ships = 2;
-
     for (int i = 0; i < MAX_ENEMY_BULLETS; i++)
     {
         initEnemyBullet(&game->enemy_bullets[i]);

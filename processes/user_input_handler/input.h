@@ -5,11 +5,8 @@
 #include <unistd.h>
 #include <stdbool.h>
 #include <pthread.h>
-#include <termios.h> // Para configuración de terminal
-#include <fcntl.h>   // Para configuración de terminal
-#include <time.h>    // Para srand()
-
 #include "globlal_signals.h"
+#include "../../Game Code/terminal_input.h"
 
 #define Buffer_Size 100
 char buffer[Buffer_Size];
@@ -17,21 +14,7 @@ char valid_keys[3] = {'a', 'd', 'k'};
 
 char user_input_fr;
 
-int index = 0;
-
-char _getch(void)
-{
-    struct termios oldt, newt;
-    char ch;
-    tcgetattr(STDIN_FILENO, &oldt);
-    newt = oldt;
-    newt.c_lflag &= ~(ICANON | ECHO);
-    tcsetattr(STDIN_FILENO, TCSANOW, &newt);
-    ch = getchar();
-    tcsetattr(STDIN_FILENO, TCSANOW, &oldt);
-    return ch;
-}
-
+int buffer_index = 0;
 
 pthread_mutex_t mutex_buffer = PTHREAD_MUTEX_INITIALIZER;
 pthread_cond_t can_read = PTHREAD_COND_INITIALIZER;
@@ -39,27 +22,27 @@ pthread_cond_t can_consume = PTHREAD_COND_INITIALIZER;
 
 void *get_input(void *arg)
 {
-
     char input = _getch();
 
     pthread_mutex_lock(&mutex_buffer);
-    while (index == Buffer_Size)
+    while (buffer_index == Buffer_Size)
         pthread_cond_wait(&can_read, &mutex_buffer);
 
     user_input_fr = input;
-    index = 1; // Indicar que hay un nuevo input disponible
+    buffer_index = 1; // Indicar que hay un nuevo input disponible
 
     pthread_cond_signal(&can_consume);
     pthread_mutex_unlock(&mutex_buffer);
+
+    return NULL; // Para evitar advertencias
 }
 
 void *consume_input(void *arg)
 {
-
     pthread_mutex_lock(&mutex_buffer);
     pthread_mutex_lock(&user_ship);
 
-    while (index == 0)
+    while (buffer_index == 0)
         pthread_cond_wait(&can_consume, &mutex_buffer);
 
     for (int i = 0; i < sizeof(valid_keys); i++)
@@ -71,10 +54,12 @@ void *consume_input(void *arg)
         }
     }
 
-    index = 0; // Indicar que el input ha sido consumido
+    buffer_index = 0; // Indicar que el input ha sido consumido
     pthread_cond_signal(&can_read);
     pthread_mutex_unlock(&mutex_buffer);
     pthread_mutex_unlock(&user_ship);
+
+    return NULL; // Para evitar advertencias
 }
 
 void user_input_handler()
@@ -95,7 +80,6 @@ void user_input_handler()
     }
 
     // Esperar a que los hilos terminen
-
     if (pthread_join(get_input_tid, NULL) != 0)
     {
         perror("Error al unir el get_input");
@@ -108,16 +92,9 @@ void user_input_handler()
         exit(EXIT_FAILURE);
     }
 
-    // Liberar recursos
-    pthread_cancel(get_input_tid);
-    pthread_cancel(consume_input_tid);
-    pthread_mutex_destroy(&mutex_buffer);
+    // No es necesario cancelar los hilos aquí ya que pthread_join los espera
 
-    // Liberar mutex_global
-    pthread_mutex_unlock(&global_mutex);
-
-    // Cuando esté implementado con procesos
-    // exit(EXIT_SUCCESS);
+    // No es necesario destruir el mutex aquí ya que es global y puede ser reutilizado
 }
 
 #endif
