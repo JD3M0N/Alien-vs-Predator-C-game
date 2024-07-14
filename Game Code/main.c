@@ -1,8 +1,10 @@
 #include <stdio.h>
-#include <conio.h>   // Para _kbhit() y _getch()
-#include <windows.h> // Para Sleep
+#include <stdlib.h>
+#include <unistd.h>
+#include <time.h>
 #include "game.h"
 #include "../processes/user_input_handler/input.h"
+#include "terminal_input.h"
 
 int main()
 {
@@ -19,7 +21,7 @@ int main()
             updateGame(&game, user_input_fr);
         }
         renderGame(&game);
-        Sleep(10); // Controla la velocidad del bucle
+        usleep(10000); // Controla la velocidad del bucle (10 ms)
     }
 
     return 0;

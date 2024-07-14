@@ -3,16 +3,18 @@
     "tasks": [
         {
             "type": "shell",
-            "label": "gcc.exe build active file",
+            "label": "gcc build active file",
             "command": "gcc",
             "args": [
                 "-g",
-                "${workspaceFolder}\\Game Code\\*.c",
+                "\"${workspaceFolder}/Game Code/*.c\"",
+                "\"${workspaceFolder}/terminal_input.c\"",
                 "-o",
-                "${workspaceFolder}\\game.exe"
+                "${workspaceFolder}/game",
+                "-pthread"
             ],
             "options": {
-                "cwd": "${fileDirname}"
+                "cwd": "${workspaceFolder}"
             },
             "problemMatcher": [
                 "$gcc"
