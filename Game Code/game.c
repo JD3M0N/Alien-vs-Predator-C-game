@@ -2,6 +2,7 @@
     #include <stdlib.h>
     #include "game.h"
     #include "enemy.h"
+    #include "../processes/game_logic/process_manager.h"
 
     void initGame(Game *game)
     {
@@ -162,6 +163,8 @@
 
                 game->enemies[game->total_active_enemy_ships] = naveEnemiga;
                 game->total_active_enemy_ships++;
+
+                createEnemyProcesses(1);
             }
         }
 
