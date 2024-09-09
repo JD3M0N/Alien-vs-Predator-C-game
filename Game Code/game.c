@@ -36,6 +36,7 @@
                         bullet->active = 0;
                         game->enemies[j].active = 0;
 
+                        removeProcess(j);
                         /////////////+++++++++++++++++++++++++++++++++++++++++++++++++++
                         ///////////// Aqu'i se descativan las naves enemigas #activa////////////
                         ////////////===========================================///////////
@@ -152,6 +153,7 @@
                 // int pNaveEnemiga = *naveEnemiga;
                 // int pNaveEnemiga = (int)naveEnemiga;
                 // removeProcess(pNaveEnemiga);
+                removeProcess(i);
             }
         }
                 // Verificar si el enemigo ha llegado a la tierra
@@ -226,14 +228,14 @@
                     game->enemies[i] = naveEnemiga;
                     game->enemies[i+1] = naveEnemiga;
 
-        createEnemyProcess(&naveEnemiga, i+1); // Crear proceso para el nuevo enemigo
+                    createEnemyProcess(&naveEnemiga, i+1); // Crear proceso para el nuevo enemigo
                 }
 
                 if(naveEnemiga.type == BASIC_TYPE)
                 {
                     game->enemies[i] = naveEnemiga;
-                    
-        createEnemyProcess(&naveEnemiga, i); // Crear proceso para el nuevo enemigo
+
+                    createEnemyProcess(&naveEnemiga, i); // Crear proceso para el nuevo enemigo
                 }
             }
         }
