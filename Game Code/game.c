@@ -226,17 +226,19 @@
                     game->enemies[i] = naveEnemiga;
                     game->enemies[i+1] = naveEnemiga;
 
+        createEnemyProcess(&naveEnemiga, i+1); // Crear proceso para el nuevo enemigo
                 }
 
                 if(naveEnemiga.type == BASIC_TYPE)
                 {
                     game->enemies[i] = naveEnemiga;
+                    
+        createEnemyProcess(&naveEnemiga, i); // Crear proceso para el nuevo enemigo
                 }
             }
         }
         
-        int pNaveEnemiga = (game->total_active_enemy_ships - 1);
-        createEnemyProcess(&naveEnemiga, pNaveEnemiga); // Crear proceso para el nuevo enemigo
+        // int pNaveEnemiga = (game->total_active_enemy_ships - 1);
     }
 
     //game->enemies[game->total_active_enemy_ships] = naveEnemiga;
