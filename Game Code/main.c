@@ -37,7 +37,7 @@ int main(int argc, char *argv[]) {
     srand(time(NULL)); // Inicializar rand con una semilla
 
     initProcessManager();
-    createEnemyProcesses(5);       // Crea procesos para enemigos
+    //createEnemyProcesses(5);       // Crea procesos para enemigos
     createPlayerProcess();         // Crea el proceso para el jugador
     printProcessTable();           // Imprime la tabla de procesos
 

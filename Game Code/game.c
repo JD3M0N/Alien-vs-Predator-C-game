@@ -86,91 +86,97 @@
         }
     }
 
-    void updateGame(Game *game, char input)
+ void updateGame(Game *game, char input)
+{
+    if (game->game_over)
     {
-        if (game->game_over)
+        return; // No actualizar si el juego ha terminado
+    }
+
+    // Actualizar la nave del jugador
+    updateShip(&game->ship, input);
+
+    if (input == 'k')
+    {
+        addBullet(game, game->ship.x, game->ship.y - 1);
+    }
+
+    // Actualizar balas del jugador
+    for (int i = 0; i < game->bullet_count; i++)
+    {
+        updateBullet(&game->bullets[i]);
+    }
+
+    // Actualizar enemigos
+    for (int i = 0; i < game->total_active_enemy_ships; i++)
+    {
+        NaveEnemiga naveEnemiga = game->enemies[i];
+        if (naveEnemiga.active == 1)
         {
-            return; // No actualizar si el juego ha terminado
+            naveEnemiga.update(&naveEnemiga);   // Actualiza el enemigo
+            naveEnemiga.moveDown(&naveEnemiga); // Mover enemigos hacia abajo
+            if (naveEnemiga.moveSide)
+            {
+                naveEnemiga.moveSide(&naveEnemiga); // Mover lateralmente si está habilitado
+            }
+
+            // Verificar si el enemigo ha llegado a la tierra
+            if (naveEnemiga.y >= FIELD_HEIGHT - 1)
+            {
+                naveEnemiga.active = 0;
+                game->ship.lives--;
+                if (game->ship.lives <= 0)
+                {
+                    game->game_over = 1; // Termina el juego si las vidas llegan a cero
+                }
+                // Eliminar proceso de la nave enemiga
+                // int pNaveEnemiga = *naveEnemiga;
+                // int pNaveEnemiga = (int)naveEnemiga;
+                // removeProcess(pNaveEnemiga);
+            }
         }
 
-        // Actualizar la nave del jugador
-        updateShip(&game->ship, input);
+        game->enemies[i] = naveEnemiga;
+    }
 
-        if (input == 'k')
-        {
-            addBullet(game, game->ship.x, game->ship.y - 1);
-        }
-
-        // Actualizar balas del jugador
-        for (int i = 0; i < game->bullet_count; i++)
-        {
-            updateBullet(&game->bullets[i]);
-        }
-
-        // Actualizar enemigos
+    if (rand() % 100 <= 10)
+    {
         for (int i = 0; i < game->total_active_enemy_ships; i++)
         {
             NaveEnemiga naveEnemiga = game->enemies[i];
-            if (naveEnemiga.active == 1)
+            if (naveEnemiga.active)
             {
-                naveEnemiga.update(&naveEnemiga);   // Actualiza el enemigo
-                naveEnemiga.moveDown(&naveEnemiga); // Mover enemigos hacia abajo
-                if (naveEnemiga.moveSide)
-                {
-                    naveEnemiga.moveSide(&naveEnemiga); // Mover lateralmente si está habilitado
-                }
-
-                // Verificar si el enemigo ha llegado a la tierra
-                if (naveEnemiga.y >= FIELD_HEIGHT - 1)
-                {
-                    naveEnemiga.active = 0;
-                    game->ship.lives--;
-                    if (game->ship.lives <= 0)
-                    {
-                        game->game_over = 1; // Termina el juego si las vidas llegan a cero
-                    }
-                }
-            }
-
-            game->enemies[i] = naveEnemiga;
-        }
-
-        if (rand() % 100 <= 10)
-        {
-            for (int i = 0; i < game->total_active_enemy_ships; i++)
-            {
-                NaveEnemiga naveEnemiga = game->enemies[i];
-                if (naveEnemiga.active)
-                {
-                    naveEnemiga.fire(&naveEnemiga, game->enemy_bullets);
-                }
+                naveEnemiga.fire(&naveEnemiga, game->enemy_bullets);
             }
         }
-
-        // Actualizar balas enemigas
-        for (int i = 0; i < MAX_ENEMY_BULLETS; i++)
-        {
-            updateEnemyBullet(&game->enemy_bullets[i]);
-        }
-
-        // Generar enemigos random
-        if (rand() % 100 <= 7)
-        {
-            if (game->total_active_enemy_ships < ENEMY_TOTAL_AMOUNT)
-            {
-                static NaveEnemiga naveEnemiga;
-                initGeneralEnemy(&naveEnemiga);
-
-                game->enemies[game->total_active_enemy_ships] = naveEnemiga;
-                game->total_active_enemy_ships++;
-
-                createEnemyProcesses(1);
-            }
-        }
-
-        // Verificar colisiones
-        checkCollisions(game);
     }
+
+    // Actualizar balas enemigas
+    for (int i = 0; i < MAX_ENEMY_BULLETS; i++)
+    {
+        updateEnemyBullet(&game->enemy_bullets[i]);
+    }
+
+    // Generar enemigos random
+    if (rand() % 100 <= 7)
+    {
+        if (game->total_active_enemy_ships < ENEMY_TOTAL_AMOUNT)
+        {
+            NaveEnemiga naveEnemiga;
+            initGeneralEnemy(&naveEnemiga);
+
+            game->enemies[game->total_active_enemy_ships] = naveEnemiga;
+            game->total_active_enemy_ships++;
+            // int pNaveEnemiga = *naveEnemiga;
+            //int pNaveEnemiga = (int)naveEnemiga;
+            int pNaveEnemiga = (game->total_active_enemy_ships - 1);
+            createEnemyProcess(&naveEnemiga, pNaveEnemiga); // Crear proceso para el nuevo enemigo
+        }
+    }
+
+    // Verificar colisiones
+    checkCollisions(game);
+}
 
     void renderGame(Game *game)
     {
