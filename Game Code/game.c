@@ -10,11 +10,17 @@
         game->bullets = NULL;
         game->bullet_count = 0;
 
-        game->total_active_enemy_ships = 0;
-
         for (int i = 0; i < MAX_ENEMY_BULLETS; i++)
         {
             initEnemyBullet(&game->enemy_bullets[i]);
+        }
+
+        for(int i=0; i<ENEMY_TOTAL_AMOUNT; i++)
+        {
+            static NaveEnemiga naveEnemiga;
+            initGeneralEnemy(&naveEnemiga);
+            game->enemies[i] = naveEnemiga;
+            game->enemies[i].active = 0;
         }
 
         game->game_over = 0; // Inicializa el juego como no terminado
@@ -35,11 +41,6 @@
                     {
                         bullet->active = 0;
                         game->enemies[j].active = 0;
-
-                        /////////////+++++++++++++++++++++++++++++++++++++++++++++++++++
-                        ///////////// Aqu'i se descativan las naves enemigas #activa////////////
-                        ////////////===========================================///////////
-                        //////////////+++++++++++++++++++++++++++++++++++++++++++++=///////////////
                     }
                 }
             }
@@ -114,7 +115,7 @@
     }
 
     // Actualizar enemigos
-    for (int i = 0; i < game->total_active_enemy_ships; i++)
+    for (int i = 0; i < ENEMY_TOTAL_AMOUNT; i++)
     {
         NaveEnemiga naveEnemiga = game->enemies[i];
         if (naveEnemiga.active == 1)
@@ -148,10 +149,6 @@
                 {
                     game->game_over = 1; // Termina el juego si las vidas llegan a cero
                 }
-                // Eliminar proceso de la nave enemiga
-                // int pNaveEnemiga = *naveEnemiga;
-                // int pNaveEnemiga = (int)naveEnemiga;
-                // removeProcess(pNaveEnemiga);
             }
         }
                 // Verificar si el enemigo ha llegado a la tierra
@@ -166,16 +163,16 @@
                     }
                 }
                 game->enemies[i] = naveEnemiga;
-                if(naveEnemiga.type == MOVING_TYPE && i < 19) game->enemies[++i] = naveEnemiga;
         }
 
         game->enemies[i] = naveEnemiga;
+        if(game->enemies[i].type == MOVING_TYPE) i++;
     }
         }
 
     if (rand() % 100 <= 10)
     {
-        for (int i = 0; i < game->total_active_enemy_ships; i++)
+        for (int i = 0; i < ENEMY_TOTAL_AMOUNT; i++)
         {
             NaveEnemiga naveEnemiga = game->enemies[i];
             if (naveEnemiga.active)
@@ -193,6 +190,8 @@
                 {
                     naveEnemiga.fire(&naveEnemiga, game->enemy_bullets);
                 }
+
+                if(naveEnemiga.type == MOVING_TYPE) i++;
             }
         }
 
@@ -203,16 +202,16 @@
     }
 
     // Generar enemigos random
-    if (rand() % 100 <= 7)
+    if (rand() % 100 <= 50)
     {
        
-        //if (game->total_active_enemy_ships < ENEMY_TOTAL_AMOUNT)
+        //if (ENEMY_TOTAL_AMOUNT < ENEMY_TOTAL_AMOUNT)
         //{
         static NaveEnemiga naveEnemiga;
         initGeneralEnemy(&naveEnemiga);
 
-        //game->enemies[game->total_active_enemy_ships] = naveEnemiga;
-        //game->total_active_enemy_ships++;
+        //game->enemies[ENEMY_TOTAL_AMOUNT] = naveEnemiga;
+        //ENEMY_TOTAL_AMOUNT++;
         // int pNaveEnemiga = *naveEnemiga;
         //int pNaveEnemiga = (int)naveEnemiga;
 
@@ -221,28 +220,28 @@
         {
             if(game->enemies[i].active == 0)
             {
-                if(naveEnemiga.type == MOVING_TYPE && game->enemies[i + 1].active == 0 && i < ENEMY_TOTAL_AMOUNT - 1)
+                if(naveEnemiga.type == MOVING_TYPE && i < ENEMY_TOTAL_AMOUNT - 1 && game->enemies[i + 1].active == 0 )
                 {
                     game->enemies[i] = naveEnemiga;
                     game->enemies[i+1] = naveEnemiga;
 
-        createEnemyProcess(&naveEnemiga, i+1); // Crear proceso para el nuevo enemigo
+                    createEnemyProcess(&naveEnemiga, i+1); // Crear proceso para el nuevo enemigo
                 }
 
                 if(naveEnemiga.type == BASIC_TYPE)
                 {
                     game->enemies[i] = naveEnemiga;
                     
-        createEnemyProcess(&naveEnemiga, i); // Crear proceso para el nuevo enemigo
+                    createEnemyProcess(&naveEnemiga, i); // Crear proceso para el nuevo enemigo
                 }
             }
         }
         
-        // int pNaveEnemiga = (game->total_active_enemy_ships - 1);
+        // int pNaveEnemiga = (ENEMY_TOTAL_AMOUNT - 1);
     }
 
-    //game->enemies[game->total_active_enemy_ships] = naveEnemiga;
-    //game->total_active_enemy_ships++;
+    //game->enemies[ENEMY_TOTAL_AMOUNT] = naveEnemiga;
+    //ENEMY_TOTAL_AMOUNT++;
 
     //createEnemyProcesses(1);
     //}
@@ -285,7 +284,7 @@
         }
 
         // Dibuja los enemigos
-        for (int i = 0; i < game->total_active_enemy_ships; i++)
+        for (int i = 0; i < ENEMY_TOTAL_AMOUNT; i++)
         {
             NaveEnemiga naveEnemiga = game->enemies[i];
             naveEnemiga.render(&naveEnemiga);
