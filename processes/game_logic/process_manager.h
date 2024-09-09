@@ -3,14 +3,16 @@
 
 #include <sys/types.h>
 #include <unistd.h>
+#include "../../Game Code/enemy.h"
+// #include "../../Game Code/enemy.c"
 
 #define MAX_PROCESSES 100
 #define QUEUE_LEVELS 3
+#define MAX_ENEMY_PROCESSES 20 // límite para el número de procesos enemigos
 
 typedef struct {
     pid_t pid;
-    char name[256];
-    int priority;
+    int enemy_id; // ID de la nave enemiga
     int queue_level;
 } ProcessInfo;
 
@@ -20,8 +22,9 @@ typedef struct {
 } ProcessQueue;
 
 void initProcessManager();
-void createEnemyProcesses(int num_enemies);
 void createPlayerProcess();
+void createEnemyProcess(NaveEnemiga* enemy, int pNaveEnemiga);
+void removeProcess(int enemy_id);
 void printProcessTable();
 void scheduleProcesses();
 
