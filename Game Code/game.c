@@ -41,6 +41,15 @@
                     {
                         bullet->active = 0;
                         game->enemies[j].active = 0;
+<<<<<<< HEAD
+=======
+
+                        removeProcess(j);
+                        /////////////+++++++++++++++++++++++++++++++++++++++++++++++++++
+                        ///////////// Aqu'i se descativan las naves enemigas #activa////////////
+                        ////////////===========================================///////////
+                        //////////////+++++++++++++++++++++++++++++++++++++++++++++=///////////////
+>>>>>>> 7d5e7a613645e726c4e4620fa9df11cc0b1c6968
                     }
                 }
             }
@@ -149,6 +158,14 @@
                 {
                     game->game_over = 1; // Termina el juego si las vidas llegan a cero
                 }
+<<<<<<< HEAD
+=======
+                // Eliminar proceso de la nave enemiga
+                // int pNaveEnemiga = *naveEnemiga;
+                // int pNaveEnemiga = (int)naveEnemiga;
+                // removeProcess(pNaveEnemiga);
+                removeProcess(i);
+>>>>>>> 7d5e7a613645e726c4e4620fa9df11cc0b1c6968
             }
         }
                 // Verificar si el enemigo ha llegado a la tierra
@@ -231,7 +248,11 @@
                 if(naveEnemiga.type == BASIC_TYPE)
                 {
                     game->enemies[i] = naveEnemiga;
+<<<<<<< HEAD
                     
+=======
+
+>>>>>>> 7d5e7a613645e726c4e4620fa9df11cc0b1c6968
                     createEnemyProcess(&naveEnemiga, i); // Crear proceso para el nuevo enemigo
                 }
             }
