@@ -33,6 +33,7 @@ typedef struct NaveEnemiga
     int y;
     int active;
     EnemyType type;
+    int size_in_mem;
     void (*update)(struct NaveEnemiga *);
     void (*render)(struct NaveEnemiga *);
     void (*fire)(struct NaveEnemiga *, EnemyBullet bullets[]);

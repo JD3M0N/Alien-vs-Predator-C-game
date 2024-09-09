@@ -10,6 +10,7 @@ void initEnemy(NaveEnemiga *enemy)
     enemy->y = 1;
     enemy->active = 1;
     enemy->type = BASIC_TYPE;
+    enemy->size_in_mem = 1;
     enemy->update = updateEnemy;
     enemy->render = renderEnemy;
     enemy->fire = fireEnemyBullet;
@@ -23,6 +24,7 @@ void initMovingEnemy(NaveEnemiga *enemy)
     enemy->y = 1;
     enemy->active = 1;
     enemy->type = MOVING_TYPE;
+    enemy->size_in_mem = 2;
     enemy->update = updateEnemy; // Asegúrate de que apunte a la función correcta
     enemy->render = renderEnemy;
     enemy->fire = fireEnemyBullet;

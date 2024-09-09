@@ -18,6 +18,7 @@
         }
 
         game->game_over = 0; // Inicializa el juego como no terminado
+        
     }
 
     void checkCollisions(Game *game)
@@ -28,12 +29,17 @@
             Bullet *bullet = &game->bullets[i];
             if (bullet->active)
             {
-                for (int j = 0; j < game->total_active_enemy_ships; j++)
+                for (int j = 0; j < ENEMY_TOTAL_AMOUNT; j++)
                 {
                     if (game->enemies[j].active && bullet->x == game->enemies[j].x && bullet->y == game->enemies[j].y)
                     {
                         bullet->active = 0;
                         game->enemies[j].active = 0;
+
+                        /////////////+++++++++++++++++++++++++++++++++++++++++++++++++++
+                        ///////////// Aqu'i se descativan las naves enemigas #activa////////////
+                        ////////////===========================================///////////
+                        //////////////+++++++++++++++++++++++++++++++++++++++++++++=///////////////
                     }
                 }
             }
@@ -108,11 +114,12 @@
         }
 
         // Actualizar enemigos
-        for (int i = 0; i < game->total_active_enemy_ships; i++)
+        for (int i = 0; i < ENEMY_TOTAL_AMOUNT; i++)
         {
-            NaveEnemiga naveEnemiga = game->enemies[i];
-            if (naveEnemiga.active == 1)
+            if(game->enemies[i].active == 1)
             {
+                NaveEnemiga naveEnemiga = game->enemies[i];
+                
                 naveEnemiga.update(&naveEnemiga);   // Actualiza el enemigo
                 naveEnemiga.moveDown(&naveEnemiga); // Mover enemigos hacia abajo
                 if (naveEnemiga.moveSide)
@@ -124,23 +131,25 @@
                 if (naveEnemiga.y >= FIELD_HEIGHT - 1)
                 {
                     naveEnemiga.active = 0;
+                    // Aqui se desactiva tambien la nave enemiga #activa
                     game->ship.lives--;
                     if (game->ship.lives <= 0)
                     {
                         game->game_over = 1; // Termina el juego si las vidas llegan a cero
                     }
                 }
+                game->enemies[i] = naveEnemiga;
+                if(naveEnemiga.type == MOVING_TYPE && i < 19) game->enemies[++i] = naveEnemiga;
             }
 
-            game->enemies[i] = naveEnemiga;
         }
 
         if (rand() % 100 <= 10)
         {
-            for (int i = 0; i < game->total_active_enemy_ships; i++)
+            for (int i = 0; i < ENEMY_TOTAL_AMOUNT; i++)
             {
                 NaveEnemiga naveEnemiga = game->enemies[i];
-                if (naveEnemiga.active)
+                if (naveEnemiga.active == 1)
                 {
                     naveEnemiga.fire(&naveEnemiga, game->enemy_bullets);
                 }
@@ -154,18 +163,37 @@
         }
 
         // Generar enemigos random
-        if (rand() % 100 <= 7)
+        if (rand() % 100 <= 100)
         {
-            if (game->total_active_enemy_ships < ENEMY_TOTAL_AMOUNT)
+            //if (game->total_active_enemy_ships < ENEMY_TOTAL_AMOUNT)
+            //{
+            static NaveEnemiga naveEnemiga;
+            initGeneralEnemy(&naveEnemiga);
+
+            // Algoritmo de seleccion de FirstFit para memoria
+            for(int i=0; i<ENEMY_TOTAL_AMOUNT; i++)
             {
-                static NaveEnemiga naveEnemiga;
-                initGeneralEnemy(&naveEnemiga);
+                if(game->enemies[i].active == 0)
+                {
+                    if(naveEnemiga.type == MOVING_TYPE && game->enemies[i + 1].active == 0 && i < ENEMY_TOTAL_AMOUNT - 1)
+                    {
+                        game->enemies[i] = naveEnemiga;
+                        game->enemies[i+1] = naveEnemiga;
 
-                game->enemies[game->total_active_enemy_ships] = naveEnemiga;
-                game->total_active_enemy_ships++;
+                    }
 
-                createEnemyProcesses(1);
+                    if(naveEnemiga.type == BASIC_TYPE)
+                    {
+                        game->enemies[i] = naveEnemiga;
+                    }
+                }
             }
+
+            //game->enemies[game->total_active_enemy_ships] = naveEnemiga;
+            //game->total_active_enemy_ships++;
+
+            createEnemyProcesses(1);
+            //}
         }
 
         // Verificar colisiones
@@ -234,3 +262,5 @@
         game->bullets[game->bullet_count].active = 1;
         game->bullet_count++;
     }
+
+    
